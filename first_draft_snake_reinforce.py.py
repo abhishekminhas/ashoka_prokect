@@ -13,15 +13,31 @@ from collections import namedtuple, deque
 from snake_matrix import SnakeGame
 import statistics
 
-from testing import PGN
 
 
 GAMMA = 0.99
 LEARNING_RATE = 0.02
 NUM_EPISODES = 4
 EPOCHS = 100
+grid_size = 5
 
-env = SnakeGame(5)
+class PGN(nn.Module):
+	def __init__(self):
+		super().__init__()
+		self.fc1= nn.Linear(grid_size*grid_size,64)
+		self.fc2= nn.Linear(64,64)
+		self.fc3= nn.Linear(64,64)
+		self.fc4= nn.Linear(64,3)
+	def forward(self,x):
+		x = F.relu(self.fc1(x))
+		x = F.relu(self.fc2(x))
+		x = F.relu(self.fc3(x))
+		x = self.fc4(x)
+		# x= F.softmax(x, dim=1) # view(-1, 25) is important for this
+		return x
+
+
+env = SnakeGame(grid_size)
 net = PGN()
 for param in net.parameters():
 	param.requires_grad = True
